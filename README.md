@@ -397,25 +397,20 @@ leads (
 
 ## 📸 Screenshots
 
-> Add actual screenshots to the `screenshots/` folder. See [`screenshots/INSTRUCTIONS.md`](screenshots/INSTRUCTIONS.md) for the full list.
-
 ### 1. Sign In & Registration Page
-![Login Page](screenshots/login_page_screenshot.png)
+![Login Page](screenshots/Screenshot%202026-06-25%20120933.png)
 
 ### 2. Analytics Dashboard
-![Dashboard](screenshots/dashboard_screenshot.png)
+![Dashboard](screenshots/Screenshot%202026-06-25%20120950.png)
 
 ### 3. Lead Management Table
-![Leads Page](screenshots/leads_page_screenshot.png)
+![Leads Page](screenshots/Screenshot%202026-06-25%20120957.png)
 
 ### 4. Lead Detail — AI Score + Email Draft
-![Lead Detail Modal](screenshots/lead_detail_modal_screenshot.png)
+![Lead Detail Modal](screenshots/Screenshot%202026-06-25%20121004.png)
 
 ### 5. Campaigns / Outbox
-![Campaigns](screenshots/campaigns_screenshot.png)
-
-### 6. Settings Page
-![Settings](screenshots/settings_screenshot.png)
+![Campaigns](screenshots/Screenshot%202026-06-25%20121011.png)
 
 ---
 
