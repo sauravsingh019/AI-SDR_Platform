@@ -1,0 +1,166 @@
+{
+  "info": {
+    "name": "AI SDR API",
+    "description": "Postman collection for the Mini AI SDR application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"testpass123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "pm.collectionVariables.set('token', res.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@aisdr.com\",\n  \"password\": \"demo1234\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/auth/me",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leads",
+      "item": [
+        {
+          "name": "Create Lead",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "pm.collectionVariables.set('lead_id', res.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/leads/",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Gupta\",\n  \"email\": \"rahul@startup.io\",\n  \"company\": \"StartupIO\",\n  \"job_title\": \"Founder & CEO\",\n  \"industry\": \"SaaS\",\n  \"company_size\": \"10-50\",\n  \"annual_revenue\": \"$500K-$2M\",\n  \"pain_points\": \"Struggling with outbound sales, no proper CRM\",\n  \"notes\": \"Met at SaaSconf 2024, very interested in automation\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Leads",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/leads/",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Get Lead Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/leads/stats",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Update Lead",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/api/leads/{{lead_id}}",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"contacted\",\n  \"notes\": \"Follow-up call scheduled for next week\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Lead",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/api/leads/{{lead_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Services",
+      "item": [
+        {
+          "name": "Qualify Lead (OpenAI)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/ai/qualify",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lead_id\": {{lead_id}}\n}"
+            }
+          }
+        },
+        {
+          "name": "Generate Email (Gemini)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/ai/generate-email",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lead_id\": {{lead_id}}\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
