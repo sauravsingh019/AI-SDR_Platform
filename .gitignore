@@ -92,4 +92,3 @@ coverage.xml
 *.pycache
 scratch_*.py
 {backend/
-screenshots/*.png
