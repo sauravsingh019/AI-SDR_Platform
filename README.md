@@ -393,27 +393,6 @@ leads (
 
 ---
 
----
-
-## 📸 Screenshots
-
-### 1. Sign In & Registration Page
-![Login Page](screenshots/Screenshot%202026-06-25%20120933.png)
-
-### 2. Analytics Dashboard
-![Dashboard](screenshots/Screenshot%202026-06-25%20120950.png)
-
-### 3. Lead Management Table
-![Leads Page](screenshots/Screenshot%202026-06-25%20120957.png)
-
-### 4. Lead Detail — AI Score + Email Draft
-![Lead Detail Modal](screenshots/Screenshot%202026-06-25%20121004.png)
-
-### 5. Campaigns / Outbox
-![Campaigns](screenshots/Screenshot%202026-06-25%20121011.png)
-
----
-
 ## 👨‍💻 Author
 
 Built as part of **AI SDR Intern Technical Assessment** — demonstrating full-stack development, multi-provider AI orchestration, and production-ready UI/UX.
