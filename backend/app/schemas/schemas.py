@@ -99,6 +99,7 @@ class LeadOut(BaseModel):
 
 class QualifyRequest(BaseModel):
     lead_id: int
+    system_prompt: Optional[str] = None
 
 
 class QualifyResponse(BaseModel):
@@ -113,6 +114,7 @@ class EmailGenRequest(BaseModel):
     sdr_name: Optional[str] = None
     company_name: Optional[str] = None
     company_pitch: Optional[str] = None
+    system_prompt: Optional[str] = None
 
 
 class EmailGenResponse(BaseModel):
@@ -125,6 +127,7 @@ class CallScriptRequest(BaseModel):
     sdr_name: Optional[str] = None
     company_name: Optional[str] = None
     company_pitch: Optional[str] = None
+    system_prompt: Optional[str] = None
 
 
 class CallScriptResponse(BaseModel):
@@ -132,5 +135,72 @@ class CallScriptResponse(BaseModel):
     call_script: str
 
 
+class LinkedInGenRequest(BaseModel):
+    lead_id: int
+    system_prompt: Optional[str] = None
+
+
+class LinkedInGenResponse(BaseModel):
+    lead_id: int
+    connection_note: str
+    inmail_draft: str
+
+
+class ResearchGenRequest(BaseModel):
+    lead_id: int
+    system_prompt: Optional[str] = None
+
+
+class ResearchGenResponse(BaseModel):
+    lead_id: int
+    company_profile: str
+    tech_stack: str
+    competitors: str
+
+
+class BattleCardGenRequest(BaseModel):
+    lead_id: int
+    system_prompt: Optional[str] = None
+
+
+class BattleCardGenResponse(BaseModel):
+    lead_id: int
+    battle_card: str
+
+
 class DiscoverLeadsRequest(BaseModel):
     keyword: str
+
+
+class DialerResponseRequest(BaseModel):
+    lead_id: int
+    user_objection: str
+    conversation_history: Optional[str] = ""
+
+
+class DialerResponseResponse(BaseModel):
+    lead_id: int
+    ai_response: str
+
+
+class DomainEnrichmentRequest(BaseModel):
+    domain: str
+
+
+class PitchRateRequest(BaseModel):
+    prospect_profile: str
+    user_pitch: str
+
+
+class PitchRateResponse(BaseModel):
+    overall_score: int
+    empathy_score: int
+    value_pitch_score: int
+    objection_handling_score: int
+    feedback: str
+
+
+class ICPLeadsRequest(BaseModel):
+    value_prop: str
+
+

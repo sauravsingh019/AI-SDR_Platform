@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { leadsApi } from "@/lib/api";
 import { loadNotifications, saveNotifications, addNotification as pushNotification } from "@/lib/notification-utils";
 import Sidebar from "@/components/Sidebar";
-import { Users, Flame, TrendingUp, Mail, BarChart2, ArrowUpRight, Zap, Bell, PlusCircle, Inbox, Settings, Sparkles, Lightbulb } from "lucide-react";
+import { Users, Flame, TrendingUp, Mail, BarChart2, ArrowUpRight, Zap, Bell, PlusCircle, Inbox, Settings, Sparkles, Lightbulb, Coins, DollarSign } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, LineChart, Line, LabelList } from "recharts";
 import Link from "next/link";
 import clsx from "clsx";
@@ -40,13 +40,34 @@ export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [roiLeads, setRoiLeads] = useState<number>(50);
+  const [roiRate, setRoiRate] = useState<number>(35);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
 
     leadsApi.stats()
-      .then((r) => setStats(r.data))
+      .then((r) => {
+        let finalStats = r.data;
+        const savedStats = localStorage.getItem("ai-sdr-stats");
+        if (savedStats) {
+          try {
+            const parsed = JSON.parse(savedStats);
+            finalStats = {
+              ...r.data,
+              by_status: {
+                ...r.data.by_status,
+                qualified: (r.data.by_status?.qualified || 0) + (parsed.meetingsBooked || 0)
+              }
+            };
+          } catch {}
+        }
+        setStats(finalStats);
+        if (finalStats?.total) {
+          setRoiLeads(finalStats.total);
+        }
+      })
       .catch(() => setStats(null))
       .finally(() => setLoading(false));
 
@@ -110,10 +131,14 @@ export default function DashboardPage() {
   const emailsGenerated = stats?.emails_generated ?? 0;
   const emailRate = totalLeads > 0 ? Math.round((emailsGenerated / totalLeads) * 100) : 0;
 
+  const pipelineValue = ((stats?.by_score?.hot ?? 0) * 12000 + (stats?.by_score?.warm ?? 0) * 4500);
+  const formattedPipeline = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(pipelineValue);
+
   const statCards = [
     { label: "Total Leads", value: stats?.total ?? 0, icon: Users, color: "blue", trend: getTrendData(stats?.total ?? 0), stroke: "#3b82f6" },
     { label: "Hot Leads", value: stats?.by_score?.hot ?? 0, icon: Flame, color: "red", trend: getTrendData(stats?.by_score?.hot ?? 0), stroke: "#ef4444" },
-    { label: "Qualified Rate", value: `${stats?.qualified_rate ?? 0}%`, icon: TrendingUp, color: "green", trend: getTrendData(stats?.qualified_rate ?? 0), stroke: "#10b981" },
+    { label: "Pipeline Value", value: formattedPipeline, icon: Coins, color: "green", trend: getTrendData(pipelineValue / 1000), stroke: "#10b981" },
+    { label: "Qualified Rate", value: `${stats?.qualified_rate ?? 0}%`, icon: TrendingUp, color: "blue", trend: getTrendData(stats?.qualified_rate ?? 0), stroke: "#3b82f6" },
     { label: "Converted", value: stats?.by_status?.converted ?? 0, icon: Mail, color: "purple", trend: getTrendData(stats?.by_status?.converted ?? 0), stroke: "#8b5cf6" },
   ];
 
@@ -213,7 +238,7 @@ export default function DashboardPage() {
         ) : (
           <>
             {/* Stat cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
               {statCards.map(({ label, value, icon: Icon, color, trend, stroke }) => (
                 <div key={label} className="card p-5 flex flex-col justify-between min-h-[140px]">
                   <div>
@@ -407,8 +432,9 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Campaign Outreach Performance — real data only */}
-            <div className="mb-8">
+            {/* Outreach & ROI Metrics */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+              {/* Campaign Outreach Performance */}
               <div className="card p-6">
                 <h2 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <Mail className="w-4 h-4 text-purple-500" />
@@ -447,6 +473,74 @@ export default function DashboardPage() {
                 ) : (
                   <EmptyCard icon={<Mail className="w-10 h-10" />} title="No outreach yet" desc="Generate emails for your leads to track campaign performance here." height="h-40" />
                 )}
+              </div>
+
+              {/* AI Sales ROI Calculator */}
+              <div className="card p-6 flex flex-col justify-between">
+                <div>
+                  <h2 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-emerald-500" />
+                    AI Agent ROI & Efficiency Calculator
+                  </h2>
+                  <p className="text-[11px] text-gray-405 dark:text-slate-500 mb-5 leading-relaxed">
+                    Compare manual human prospecting with the automated AI SDR framework costs.
+                  </p>
+
+                  <div className="space-y-4">
+                    {/* Slider 1: Lead Volume */}
+                    <div>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-gray-505 dark:text-slate-400">Total Leads (Campaign Size)</span>
+                        <span className="font-bold text-gray-900 dark:text-white">{roiLeads} prospects</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={10}
+                        max={500}
+                        step={5}
+                        value={roiLeads}
+                        onChange={(e) => setRoiLeads(Number(e.target.value))}
+                        className="w-full h-1.5 bg-gray-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                      />
+                    </div>
+
+                    {/* Slider 2: Human SDR wage */}
+                    <div>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-gray-505 dark:text-slate-400">Human SDR Equiv. Wage</span>
+                        <span className="font-bold text-gray-900 dark:text-white">${roiRate}/hr</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={15}
+                        max={100}
+                        step={1}
+                        value={roiRate}
+                        onChange={(e) => setRoiRate(Number(e.target.value))}
+                        className="w-full h-1.5 bg-gray-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Calculations breakdown */}
+                  <div className="grid grid-cols-2 gap-4 mt-6 pt-5 border-t border-gray-100 dark:border-slate-800/80">
+                    <div className="bg-slate-50/50 dark:bg-slate-900/30 p-3 rounded-xl border border-gray-100/50 dark:border-slate-850">
+                      <p className="text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-wider font-semibold">Hours Saved</p>
+                      <p className="text-xl font-bold text-blue-600 dark:text-blue-400 mt-1 font-mono">
+                        {(roiLeads * 4.5).toFixed(0)} hrs
+                      </p>
+                      <p className="text-[9px] text-gray-400 mt-0.5">4.5 hrs saved per lead</p>
+                    </div>
+
+                    <div className="bg-slate-50/50 dark:bg-slate-900/30 p-3 rounded-xl border border-gray-100/50 dark:border-slate-850">
+                      <p className="text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-wider font-semibold">B2B Labor Savings</p>
+                      <p className="text-xl font-bold text-emerald-500 mt-1 font-mono">
+                        ${(roiLeads * 4.5 * roiRate - roiLeads * 0.15).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </p>
+                      <p className="text-[9px] text-gray-400 mt-0.5 font-medium">Net cash saved (minus AI costs)</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </>

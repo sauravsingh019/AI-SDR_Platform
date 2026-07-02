@@ -4,6 +4,31 @@ import { leadsApi } from "@/lib/api";
 import toast from "react-hot-toast";
 import { X, Loader2 } from "lucide-react";
 
+interface FieldProps {
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  placeholder?: string;
+  required?: boolean;
+}
+
+function Field({ label, value, onChange, type = "text", placeholder = "", required = false }: FieldProps) {
+  return (
+    <div>
+      <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="input-field"
+        required={required}
+      />
+    </div>
+  );
+}
+
 interface Props {
   lead?: any;
   onClose: () => void;
@@ -44,24 +69,21 @@ export default function LeadModal({ lead, onClose, onSave }: Props) {
       }
       onSave();
     } catch (err: any) {
-      toast.error(err.response?.data?.detail || "Save failed");
+      let errorMsg = "Save failed";
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMsg = err.response.data.detail
+            .map((d: any) => `${d.loc[d.loc.length - 1]}: ${d.msg}`)
+            .join(", ");
+        } else if (typeof err.response.data.detail === "string") {
+          errorMsg = err.response.data.detail;
+        }
+      }
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
-
-  const Field = ({ label, name, type = "text", placeholder = "" }: any) => (
-    <div>
-      <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">{label}</label>
-      <input
-        type={type}
-        value={(form as any)[name]}
-        onChange={set(name)}
-        placeholder={placeholder}
-        className="input-field"
-      />
-    </div>
-  );
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
@@ -81,16 +103,16 @@ export default function LeadModal({ lead, onClose, onSave }: Props) {
               <p className="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-3">Contact Info</p>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 sm:col-span-1">
-                  <Field label="Full Name *" name="name" placeholder="John Doe" />
+                  <Field label="Full Name *" value={form.name} onChange={set("name")} placeholder="John Doe" required />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <Field label="Email *" name="email" type="email" placeholder="john@company.com" />
+                  <Field label="Email *" value={form.email} onChange={set("email")} type="email" placeholder="john@company.com" required />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <Field label="Phone" name="phone" placeholder="+91 98765 43210" />
+                  <Field label="Phone" value={form.phone} onChange={set("phone")} placeholder="+91 98765 43210" />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <Field label="LinkedIn URL" name="linkedin_url" placeholder="linkedin.com/in/..." />
+                  <Field label="LinkedIn URL" value={form.linkedin_url} onChange={set("linkedin_url")} placeholder="linkedin.com/in/..." />
                 </div>
               </div>
             </div>
@@ -100,22 +122,22 @@ export default function LeadModal({ lead, onClose, onSave }: Props) {
               <p className="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-3">Company</p>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 sm:col-span-1">
-                  <Field label="Company" name="company" placeholder="Acme Corp" />
+                  <Field label="Company" value={form.company} onChange={set("company")} placeholder="Acme Corp" />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <Field label="Job Title" name="job_title" placeholder="VP of Sales" />
+                  <Field label="Job Title" value={form.job_title} onChange={set("job_title")} placeholder="VP of Sales" />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <Field label="Industry" name="industry" placeholder="SaaS, Fintech..." />
+                  <Field label="Industry" value={form.industry} onChange={set("industry")} placeholder="SaaS, Fintech..." />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <Field label="Company Size" name="company_size" placeholder="50-200 employees" />
+                  <Field label="Company Size" value={form.company_size} onChange={set("company_size")} placeholder="50-200 employees" />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <Field label="Annual Revenue" name="annual_revenue" placeholder="$5M - $20M" />
+                  <Field label="Annual Revenue" value={form.annual_revenue} onChange={set("annual_revenue")} placeholder="$5M - $20M" />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <Field label="Website" name="website" placeholder="https://company.com" />
+                  <Field label="Website" value={form.website} onChange={set("website")} placeholder="https://company.com" />
                 </div>
               </div>
             </div>
@@ -146,7 +168,7 @@ export default function LeadModal({ lead, onClose, onSave }: Props) {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Status</label>
-                  <select value={form.status} onChange={set("status")} className="input-field bg-white dark:bg-slate-900 text-gray-900 dark:text-white border-gray-200 dark:border-slate-800">
+                  <select value={form.status} onChange={set("status")} className="input-field bg-white dark:bg-slate-900 text-gray-900 dark:text-white border-gray-200 dark:border-slate-850">
                     {["new", "contacted", "qualified", "unqualified", "converted"].map((s) => (
                       <option key={s} value={s} className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">{s.charAt(0).toUpperCase() + s.slice(1)}</option>
                     ))}

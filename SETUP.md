@@ -1,80 +1,143 @@
-# AI SDR — Quick Start Guide
+# 🚀 AI SDR — Quick Start Guide
 
-> Get up and running in under 5 minutes.
+> Get your AI SDR platform up and running in **under 5 minutes**.
 
 ---
 
-## 1. Database Setup
+# 1️⃣ Database Setup
 
-Run the setup script as PostgreSQL superuser:
+Run the database setup script using a PostgreSQL superuser:
 
 ```bash
 psql -U postgres -f database/setup.sql
 ```
 
-This creates:
-- **Database:** `ai_sdr_db`
-- **User:** `sdr_user` / `sdr_pass`
-- **Demo login:** `demo@aisdr.com` / `demo1234`
+The script automatically creates:
+
+* **Database:** `ai_sdr_db`
+* **Database User:** `sdr_user`
+* **Password:** `sdr_pass`
+* **Demo Account:** `demo@aisdr.com`
+* **Demo Password:** `demo1234`
 
 ---
 
-## 2. Backend Setup
+# 2️⃣ Backend Setup
+
+Navigate to the backend directory and configure the Python environment.
 
 ```bash
 cd backend
 
+# Create a virtual environment
 python -m venv venv
-venv\Scripts\activate          # Windows
-# source venv/bin/activate    # macOS / Linux
 
+# Activate the virtual environment
+
+# Windows
+venv\Scripts\activate
+
+# macOS / Linux
+# source venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
-cp .env.example .env
-# Edit .env — add at least one AI key (or leave empty for Mock AI mode)
 
+# Create environment configuration
+cp .env.example .env
+```
+
+Open the `.env` file and add at least one AI provider API key. If no API keys are provided, the application will automatically run in **Mock AI Mode**.
+
+Start the FastAPI server:
+
+```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-- **API:** http://localhost:8000
-- **Swagger UI:** http://localhost:8000/docs
+### Backend URLs
+
+| Service    | URL                          |
+| ---------- | ---------------------------- |
+| API        | `http://localhost:8000`      |
+| Swagger UI | `http://localhost:8000/docs` |
 
 ---
 
-## 3. Frontend Setup
+# 3️⃣ Frontend Setup
+
+Navigate to the frontend directory and install the required dependencies.
 
 ```bash
 cd frontend
+
 npm install
+
 echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
+
 npm run dev
 ```
 
-- **App:** http://localhost:3000
+### Frontend URL
+
+| Service     | URL                     |
+| ----------- | ----------------------- |
+| Application | `http://localhost:3000` |
 
 ---
 
-## Mock AI Mode
+# 🤖 Mock AI Mode
 
-No API keys? No problem. Leave all AI keys empty in `backend/.env` — the **Mock AI Simulator** activates automatically and supports:
-- Full FANT lead qualification
-- Personalized email generation
-- End-to-end workflow testing
+Don't have AI API keys yet? No problem.
 
-No external AI services needed.
+Simply leave all AI provider keys empty in `backend/.env`, and the platform will automatically switch to the built-in **Mock AI Simulator**.
 
----
+Mock AI Mode supports:
 
-## Application Routes
+* ✅ FANT Lead Qualification
+* ✅ Personalized Email Generation
+* ✅ Complete Lead Management Workflow
+* ✅ SDR Training & Testing
+* ✅ End-to-End Application Testing
 
-| Route | Description |
-| ------------ | ------------------------------------------------------------------------ |
-| `/` | Redirects to Dashboard |
-| `/login` | Sign In / Register |
-| `/dashboard` | Analytics dashboard with KPI cards and pipeline charts |
-| `/leads` | Lead management — CRUD, AI qualification, email generation |
-| `/campaigns` | Outbox email logs and campaign dispatch |
-| `/settings` | Profile, API keys, theme, and notifications |
+No external AI services are required.
 
 ---
 
-Once both servers are running, open **http://localhost:3000** and sign in with `demo@aisdr.com` / `demo1234`.
+# 📍 Application Routes
+
+| Route        | Description                                                                                |
+| ------------ | ------------------------------------------------------------------------------------------ |
+| `/`          | Redirects to the Dashboard                                                                 |
+| `/login`     | User Sign In & Registration                                                                |
+| `/dashboard` | Sales analytics dashboard with KPI cards, charts, and pipeline metrics                     |
+| `/leads`     | Lead management, AI qualification, personalized email generation, and CRUD operations      |
+| `/campaigns` | Outreach campaigns, sequence builder, email logs, and domain warmup monitoring             |
+| `/training`  | SDR Training Arena with AI buyer personas, voice/text roleplay, and performance scorecards |
+| `/settings`  | User profile, API key management, theme preferences, and notification settings             |
+
+---
+
+# ✅ You're Ready!
+
+Once both the backend and frontend servers are running, open:
+
+```text
+http://localhost:3000
+```
+
+Sign in using the demo credentials:
+
+**Email**
+
+```text
+demo@aisdr.com
+```
+
+**Password**
+
+```text
+demo1234
+```
+
+You're now ready to explore the AI SDR platform, generate leads, build outreach campaigns, and practice sales conversations with AI-powered buyer personas.

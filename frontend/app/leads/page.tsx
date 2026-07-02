@@ -5,8 +5,9 @@ import { loadNotifications, saveNotifications, addNotification as pushNotif } fr
 import Sidebar from "@/components/Sidebar";
 import LeadModal from "@/components/LeadModal";
 import LeadDetailModal from "@/components/LeadDetailModal";
-import { Search, Plus, Flame, Thermometer, Snowflake, Loader2, Trash2, Eye, Sparkles, Mail, Pencil, Bell, Upload, X } from "lucide-react";
+import { Search, Plus, Flame, Thermometer, Snowflake, Loader2, Trash2, Eye, Sparkles, Mail, Pencil, Bell, Upload, X, Globe, MessageSquare, Trophy } from "lucide-react";
 import toast from "react-hot-toast";
+
 import clsx from "clsx";
 
 const SCORE_ICONS: any = {
@@ -32,8 +33,12 @@ export default function LeadsPage() {
   
   // AI Lead Finder modal states
   const [showFinderModal, setShowFinderModal] = useState(false);
+  const [finderTab, setFinderTab] = useState<"keyword" | "domain" | "icp">("keyword");
   const [finderKeyword, setFinderKeyword] = useState("");
+  const [finderDomain, setFinderDomain] = useState("");
+  const [finderValueProp, setFinderValueProp] = useState("");
   const [finderLoading, setFinderLoading] = useState(false);
+
 
   // Pagination states
   const [page, setPage] = useState(1);
@@ -97,7 +102,17 @@ export default function LeadsPage() {
   const handleQualify = async (id: number) => {
     setAiLoading((p) => ({ ...p, [id]: "qualify" }));
     try {
-      await aiApi.qualify(id);
+      let settings = {};
+      const saved = localStorage.getItem("ai-sdr-settings");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed.prompt_qualify) {
+            settings = { system_prompt: parsed.prompt_qualify };
+          }
+        } catch {}
+      }
+      await aiApi.qualify(id, settings);
       toast.success("Lead qualified with AI!");
       const lead = leads.find((l) => l.id === id);
       const leadName = lead?.name || `Lead #${id}`;
@@ -127,6 +142,7 @@ export default function LeadsPage() {
             sdr_name: parsed.sdr_name,
             company_name: parsed.company_name,
             company_pitch: parsed.company_pitch,
+            system_prompt: parsed.prompt_email,
           };
         } catch {}
       }
@@ -230,6 +246,45 @@ export default function LeadsPage() {
       setFinderLoading(false);
     }
   };
+
+  const handleAIDomainScrape = async () => {
+    if (!finderDomain.trim()) return;
+    setFinderLoading(true);
+    try {
+      const domain = finderDomain.trim();
+      const res = await aiApi.enrichDomain(domain);
+      const count = res.data?.length ?? 0;
+      toast.success(`AI enriched & imported ${count} stakeholders for ${domain}!`);
+      addNotification("Domain Leads Scraped", `Discovered and imported ${count} prospects from ${domain}`);
+      setShowFinderModal(false);
+      setFinderDomain("");
+      fetchLeads();
+    } catch (e: any) {
+      toast.error(e.response?.data?.detail || "Domain enrichment failed");
+    } finally {
+      setFinderLoading(false);
+    }
+  };
+
+  const handleAIICPLeads = async () => {
+    if (!finderValueProp.trim()) return;
+    setFinderLoading(true);
+    try {
+      const valProp = finderValueProp.trim();
+      const res = await aiApi.icpLeads(valProp);
+      const count = res.data?.length ?? 0;
+      toast.success(`AI generated target ICP & imported ${count} prospects!`);
+      addNotification("ICP Leads Generated", `Generated target ICP prospects for: "${valProp.substring(0, 30)}..."`);
+      setShowFinderModal(false);
+      setFinderValueProp("");
+      fetchLeads();
+    } catch (e: any) {
+      toast.error(e.response?.data?.detail || "ICP Leads generation failed");
+    } finally {
+      setFinderLoading(false);
+    }
+  };
+
   // HTML5 Drag and Drop Handlers removed (Kanban mode disabled)
 
   const scoreBadgeClass: any = {
@@ -561,44 +616,156 @@ export default function LeadsPage() {
               <div>
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-white flex items-center gap-1.5">
                   <Sparkles className="w-5 h-5 text-blue-500 animate-pulse" />
-                  Find Leads with AI
+                  Lead Generation Center
                 </h3>
-                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Enter target parameters (e.g. "Fintech SaaS CTOs") and AI will simulated-discover prospects.</p>
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Discover contacts via AI Search or scrape target stakeholders by company domain.</p>
               </div>
               <button onClick={() => setShowFinderModal(false)} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-400">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="e.g. Fintech Tech Directors, SaaS CEOs..."
-                value={finderKeyword}
-                onChange={(e) => setFinderKeyword(e.target.value)}
-                className="input-field w-full text-sm"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !finderLoading) handleAIFindLeads();
-                }}
-              />
+
+            {/* Modal Tabs */}
+            <div className="flex border-b border-gray-100 dark:border-slate-800">
               <button
-                onClick={handleAIFindLeads}
-                disabled={finderLoading || !finderKeyword.trim()}
-                className="btn-primary w-full flex items-center justify-center gap-2 py-2 text-xs disabled:opacity-50"
-              >
-                {finderLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Finding prospects...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4" />
-                    Discover prospects
-                  </>
+                onClick={() => setFinderTab("keyword")}
+                className={clsx(
+                  "flex-1 pb-3 text-xs font-semibold border-b-2 transition-all flex items-center justify-center gap-1.5",
+                  finderTab === "keyword"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-400 dark:text-slate-500"
                 )}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                AI Keyword
+              </button>
+              <button
+                onClick={() => setFinderTab("domain")}
+                className={clsx(
+                  "flex-1 pb-3 text-xs font-semibold border-b-2 transition-all flex items-center justify-center gap-1.5",
+                  finderTab === "domain"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-400 dark:text-slate-500"
+                )}
+              >
+                <Globe className="w-3.5 h-3.5" />
+                Domain Scraper
+              </button>
+              <button
+                onClick={() => setFinderTab("icp")}
+                className={clsx(
+                  "flex-1 pb-3 text-xs font-semibold border-b-2 transition-all flex items-center justify-center gap-1.5",
+                  finderTab === "icp"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-400 dark:text-slate-500"
+                )}
+              >
+                <Trophy className="w-3.5 h-3.5" />
+                AI ICP
               </button>
             </div>
+            
+            {finderTab === "keyword" && (
+              <div className="space-y-3 pt-1">
+                <label className="block text-xs font-semibold text-gray-500 dark:text-slate-400">Target Keyword / Role Profile</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Fintech Tech Directors, SaaS CEOs..."
+                  value={finderKeyword}
+                  onChange={(e) => setFinderKeyword(e.target.value)}
+                  className="input-field w-full text-sm"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !finderLoading) handleAIFindLeads();
+                  }}
+                />
+                <button
+                  onClick={handleAIFindLeads}
+                  disabled={finderLoading || !finderKeyword.trim()}
+                  className="btn-primary w-full flex items-center justify-center gap-2 py-2.5 text-xs disabled:opacity-50"
+                >
+                  {finderLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Searching B2B databases...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      Discover Prospects
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+            
+            {finderTab === "domain" && (
+              <div className="space-y-3 pt-1">
+                <label className="block text-xs font-semibold text-gray-500 dark:text-slate-400">Target Company Website Domain</label>
+                <input
+                  type="text"
+                  placeholder="e.g. stripe.com, zoom.us, salesforce.com"
+                  value={finderDomain}
+                  onChange={(e) => setFinderDomain(e.target.value)}
+                  className="input-field w-full text-sm"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !finderLoading) handleAIDomainScrape();
+                  }}
+                />
+                <button
+                  onClick={handleAIDomainScrape}
+                  disabled={finderLoading || !finderDomain.trim()}
+                  className="btn-primary w-full flex items-center justify-center gap-2 py-2.5 text-xs disabled:opacity-50 bg-indigo-600 hover:bg-indigo-700"
+                >
+                  {finderLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Scraping & enriching domain...
+                    </>
+                  ) : (
+                    <>
+                      <Globe className="w-4 h-4" />
+                      Enrich & Import Leads
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {finderTab === "icp" && (
+              <div className="space-y-3 pt-1">
+                <label className="block text-xs font-semibold text-gray-500 dark:text-slate-400">Your Company Product / Value Proposition</label>
+                <textarea
+                  placeholder="e.g. We build a database monitor that reduces AWS cost for fintech enterprises..."
+                  value={finderValueProp}
+                  onChange={(e) => setFinderValueProp(e.target.value)}
+                  className="input-field w-full text-sm min-h-[80px]"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey && !finderLoading) {
+                      e.preventDefault();
+                      handleAIICPLeads();
+                    }
+                  }}
+                />
+                <button
+                  onClick={handleAIICPLeads}
+                  disabled={finderLoading || !finderValueProp.trim()}
+                  className="btn-primary w-full flex items-center justify-center gap-2 py-2.5 text-xs disabled:opacity-50 bg-violet-600 hover:bg-violet-700 shadow-lg shadow-violet-500/20"
+                >
+                  {finderLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Generating ICP & prospects...
+                    </>
+                  ) : (
+                    <>
+                      <Trophy className="w-4 h-4" />
+                      Generate ICP & Import Leads
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
           </div>
         </div>
       )}

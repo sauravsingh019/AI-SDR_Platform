@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Zap, LayoutDashboard, Users, LogOut, Menu, X, Sun, Moon, Settings, Mail } from "lucide-react";
+import { Zap, LayoutDashboard, Users, LogOut, Menu, X, Sun, Moon, Settings, Mail, MessageSquare, BarChart2, BookOpen, Link2, Trophy } from "lucide-react";
 import { useState } from "react";
 import clsx from "clsx";
 import { useTheme } from "@/app/theme-provider";
@@ -10,8 +10,14 @@ const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/leads", icon: Users, label: "Leads" },
   { href: "/campaigns", icon: Mail, label: "Campaigns" },
+  { href: "/inbox", icon: MessageSquare, label: "Inbox" },
+  { href: "/analytics", icon: BarChart2, label: "Analytics" },
+  { href: "/playbooks", icon: BookOpen, label: "Playbooks" },
+  { href: "/training", icon: Trophy, label: "Training Arena" },
+  { href: "/integrations", icon: Link2, label: "Integrations" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
+
 
 export default function Sidebar() {
   const pathname = usePathname();

@@ -30,7 +30,17 @@ interface SettingsState {
   target_industries: string[];
   target_company_sizes: string[];
   target_titles: string[];
-
+  // Prompts
+  prompt_qualify: string;
+  prompt_email: string;
+  prompt_linkedin: string;
+  prompt_dialer: string;
+  prompt_research: string;
+  prompt_battle_card: string;
+  // CRM
+  crm_hubspot: boolean;
+  crm_salesforce: boolean;
+  crm_auto_sync: boolean;
 }
 
 const TONE_OPTIONS = ["Professional", "Conversational", "Consultative", "Direct & Urgent", "Friendly"];
@@ -39,8 +49,6 @@ const CTA_OPTIONS = ["15-min call", "Quick reply", "Demo request", "Video walkth
 const SIZE_OPTIONS = ["1–10", "11–50", "51–200", "201–500", "500–1000", "1000+"];
 const INDUSTRY_SUGGESTIONS = ["SaaS", "Fintech", "HealthTech", "E-commerce", "EdTech", "Logistics", "Real Estate", "Manufacturing", "Cybersecurity", "AI / ML"];
 const TITLE_SUGGESTIONS = ["CEO", "CTO", "VP Sales", "Head of Growth", "Founder", "Director", "Product Manager", "VP Engineering", "CMO", "COO"];
-
-
 
 export default function SettingsPage() {
   const [form, setForm] = useState<SettingsState>({
@@ -61,6 +69,15 @@ export default function SettingsPage() {
     target_industries: ["SaaS", "Fintech"],
     target_company_sizes: ["51–200", "201–500"],
     target_titles: ["CEO", "VP Sales", "Founder"],
+    prompt_qualify: "You are an expert sales analyst. Qualify the lead using the FANT framework (Funding, Authority, Need, Timeline) and assign a score (hot, warm, cold).",
+    prompt_email: "You are an elite sales copywriter. Generate a highly personalized cold email based on the prospect's profile, company size, and pain points.",
+    prompt_linkedin: "Draft a professional LinkedIn connection invite (max 300 characters) and a detailed InMail pitch.",
+    prompt_dialer: "Generate a cold calling dialer script with an introduction, value proposition, handling for common objections, and a clear call to action.",
+    prompt_research: "Analyze the company's background, industry position, predicted technologies, and key competitors.",
+    prompt_battle_card: "Construct a sales battle card detailing standard objections from this role/company size and the exact counter-arguments.",
+    crm_hubspot: false,
+    crm_salesforce: false,
+    crm_auto_sync: false,
   });
   const [saved, setSaved] = useState(false);
   const [newIndustry, setNewIndustry] = useState("");
@@ -190,7 +207,7 @@ export default function SettingsPage() {
     <div className="flex min-h-screen text-slate-900 dark:text-slate-100 transition-colors duration-300 relative overflow-hidden">
 
       <Sidebar />
-      <main className="flex-1 lg:ml-64 px-6 py-8 lg:px-10 lg:py-10 relative z-10">
+      <main className="flex-1 lg:ml-64 px-6 pt-8 pb-4 lg:px-10 lg:pt-10 lg:pb-6 relative z-10">
 
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
@@ -260,57 +277,76 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              {/* Email Signature & Contact */}
+              {/* AI Generation Preferences */}
               <div className="card p-6">
                 <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-gray-100 dark:border-slate-800/70">
-                  <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-500"><Mail className="w-4 h-4" /></div>
+                  <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500"><Sliders className="w-4 h-4" /></div>
                   <div>
-                    <h2 className="font-semibold text-gray-900 dark:text-white text-sm">Email Signature & Contact</h2>
-                    <p className="text-[11px] text-gray-450 dark:text-slate-500 mt-0.5">Appended to every outreach email as a professional signature.</p>
+                    <h2 className="font-semibold text-gray-900 dark:text-white text-sm">AI Generation Preferences</h2>
+                    <p className="text-[11px] text-gray-450 dark:text-slate-500 mt-0.5">Fine-tune how the AI writes your emails and scripts.</p>
                   </div>
                 </div>
-                <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Phone className="w-3 h-3" />Phone Number</label>
-                    <input
-                      type="tel"
-                      value={form.sdr_phone}
-                      onChange={handleChange("sdr_phone")}
-                      placeholder="e.g. +1 (555) 000-1234"
-                      className={clsx("input-field", errors.sdr_phone && "border-red-500 focus:border-red-500 focus:ring-red-500/20")}
-                    />
-                    {errors.sdr_phone && (
-                      <p className="text-[11px] text-red-500 mt-1 font-medium">{errors.sdr_phone}</p>
-                    )}
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><MessageSquare className="w-3 h-3" />Email Tone</label>
+                    <select value={form.email_tone} onChange={handleChange("email_tone")} className="input-field">
+                      {TONE_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+                    </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Linkedin className="w-3 h-3" />LinkedIn Profile URL</label>
-                    <input
-                      type="url"
-                      value={form.sdr_linkedin}
-                      onChange={handleChange("sdr_linkedin")}
-                      placeholder="https://linkedin.com/in/yourprofile"
-                      className={clsx("input-field", errors.sdr_linkedin && "border-red-500 focus:border-red-500 focus:ring-red-500/20")}
-                    />
-                    {errors.sdr_linkedin && (
-                      <p className="text-[11px] text-red-500 mt-1 font-medium">{errors.sdr_linkedin}</p>
-                    )}
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Target className="w-3 h-3" />Preferred CTA</label>
+                    <select value={form.cta_style} onChange={handleChange("cta_style")} className="input-field">
+                      {CTA_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Mail className="w-3 h-3" />Max Email Words</label>
+                    <input type="number" min={80} max={400} value={form.max_email_words} onChange={handleChange("max_email_words")} className="input-field" />
+                    <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-1">Target word count for generated emails.</p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Link className="w-3 h-3" />Calendar / Booking Link</label>
-                    <input
-                      type="url"
-                      value={form.calendar_link}
-                      onChange={handleChange("calendar_link")}
-                      placeholder="https://calendly.com/yourlink"
-                      className={clsx("input-field", errors.calendar_link && "border-red-500 focus:border-red-500 focus:ring-red-500/20")}
-                    />
-                    {errors.calendar_link ? (
-                      <p className="text-[11px] text-red-500 mt-1 font-medium">{errors.calendar_link}</p>
-                    ) : (
-                      <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-1.5">Used as the CTA link in email signatures and follow-ups.</p>
-                    )}
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Clock className="w-3 h-3" />Follow-up Gap (days)</label>
+                    <input type="number" min={1} max={14} value={form.follow_up_days} onChange={handleChange("follow_up_days")} className="input-field" />
+                    <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-1">Days between Day 1 and Day 3 follow-up.</p>
                   </div>
+                </div>
+              </div>
+
+              {/* CRM Integrations */}
+              <div className="card p-6">
+                <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-gray-100 dark:border-slate-800/70">
+                  <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-500"><Link className="w-4 h-4" /></div>
+                  <div>
+                    <h2 className="font-semibold text-gray-955 dark:text-white text-sm">CRM Management</h2>
+                    <p className="text-[11px] text-gray-450 dark:text-slate-500 mt-0.5">Integrate leads and outbound activities with Salesforce or HubSpot.</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-slate-800/60">
+                    <div>
+                      <p className="text-sm font-medium text-gray-800 dark:text-slate-200">HubSpot Integration</p>
+                      <p className="text-[10px] text-gray-450 dark:text-slate-500">Sync qualified leads and generated email outbox items.</p>
+                    </div>
+                    <button type="button" onClick={() => toggleBool("crm_hubspot")} className="ml-4 shrink-0 transition-transform active:scale-95">
+                      {form.crm_hubspot
+                        ? <ToggleRight className="w-8 h-8 text-blue-500" />
+                        : <ToggleLeft className="w-8 h-8 text-gray-300 dark:text-slate-600" />}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-slate-800/60">
+                    <div>
+                      <p className="text-sm font-medium text-gray-800 dark:text-slate-200">Salesforce Integration</p>
+                      <p className="text-[10px] text-gray-450 dark:text-slate-500">Push qualified accounts and prospects directly to CRM.</p>
+                    </div>
+                    <button type="button" onClick={() => toggleBool("crm_salesforce")} className="ml-4 shrink-0 transition-transform active:scale-95">
+                      {form.crm_salesforce
+                        ? <ToggleRight className="w-8 h-8 text-blue-500" />
+                        : <ToggleLeft className="w-8 h-8 text-gray-300 dark:text-slate-600" />}
+                    </button>
+                  </div>
+                  <Toggle field="crm_auto_sync" label="Auto-Sync Leads on Qualification" desc="Trigger background sync to active CRM whenever a lead is hot/warm rated." />
                 </div>
               </div>
 
@@ -396,44 +432,61 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              {/* AI Generation Preferences */}
+              {/* Email Signature & Contact */}
               <div className="card p-6">
                 <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-gray-100 dark:border-slate-800/70">
-                  <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500"><Sliders className="w-4 h-4" /></div>
+                  <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-500"><Mail className="w-4 h-4" /></div>
                   <div>
-                    <h2 className="font-semibold text-gray-900 dark:text-white text-sm">AI Generation Preferences</h2>
-                    <p className="text-[11px] text-gray-450 dark:text-slate-500 mt-0.5">Fine-tune how the AI writes your emails and scripts.</p>
+                    <h2 className="font-semibold text-gray-900 dark:text-white text-sm">Email Signature & Contact</h2>
+                    <p className="text-[11px] text-gray-450 dark:text-slate-500 mt-0.5">Appended to every outreach email as a professional signature.</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><MessageSquare className="w-3 h-3" />Email Tone</label>
-                    <select value={form.email_tone} onChange={handleChange("email_tone")} className="input-field">
-                      {TONE_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Phone className="w-3 h-3" />Phone Number</label>
+                    <input
+                      type="tel"
+                      value={form.sdr_phone}
+                      onChange={handleChange("sdr_phone")}
+                      placeholder="e.g. +1 (555) 000-1234"
+                      className={clsx("input-field", errors.sdr_phone && "border-red-500 focus:border-red-500 focus:ring-red-500/20")}
+                    />
+                    {errors.sdr_phone && (
+                      <p className="text-[11px] text-red-500 mt-1 font-medium">{errors.sdr_phone}</p>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Target className="w-3 h-3" />Preferred CTA</label>
-                    <select value={form.cta_style} onChange={handleChange("cta_style")} className="input-field">
-                      {CTA_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Linkedin className="w-3 h-3" />LinkedIn Profile URL</label>
+                    <input
+                      type="url"
+                      value={form.sdr_linkedin}
+                      onChange={handleChange("sdr_linkedin")}
+                      placeholder="https://linkedin.com/in/yourprofile"
+                      className={clsx("input-field", errors.sdr_linkedin && "border-red-500 focus:border-red-500 focus:ring-red-500/20")}
+                    />
+                    {errors.sdr_linkedin && (
+                      <p className="text-[11px] text-red-500 mt-1 font-medium">{errors.sdr_linkedin}</p>
+                    )}
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Mail className="w-3 h-3" />Max Email Words</label>
-                    <input type="number" min={80} max={400} value={form.max_email_words} onChange={handleChange("max_email_words")} className="input-field" />
-                    <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-1">Target word count for generated emails.</p>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Clock className="w-3 h-3" />Follow-up Gap (days)</label>
-                    <input type="number" min={1} max={14} value={form.follow_up_days} onChange={handleChange("follow_up_days")} className="input-field" />
-                    <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-1">Days between Day 1 and Day 3 follow-up.</p>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><Link className="w-3 h-3" />Calendar / Booking Link</label>
+                    <input
+                      type="url"
+                      value={form.calendar_link}
+                      onChange={handleChange("calendar_link")}
+                      placeholder="https://calendly.com/yourlink"
+                      className={clsx("input-field", errors.calendar_link && "border-red-500 focus:border-red-500 focus:ring-red-500/20")}
+                    />
+                    {errors.calendar_link ? (
+                      <p className="text-[11px] text-red-500 mt-1 font-medium">{errors.calendar_link}</p>
+                    ) : (
+                      <p className="text-[11px] text-gray-450 dark:text-slate-500 mt-1.5">Used as the CTA link in email signatures and follow-ups.</p>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Automation Toggles */}
+              {/* Automation Settings */}
               <div className="card p-6">
                 <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-gray-100 dark:border-slate-800/70">
                   <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-500"><Zap className="w-4 h-4" /></div>
@@ -447,10 +500,96 @@ export default function SettingsPage() {
                 <Toggle field="track_opens" label="Track Email Opens & Clicks" desc="Simulate open and click rate tracking for dispatched campaigns." />
               </div>
 
-
-
             </div>
           </div>
+
+          {/* Prompt Engineering Studio */}
+          <div className="card p-6 mt-5 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md">
+            <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-gray-100 dark:border-slate-800/70">
+              <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500"><Sliders className="w-4 h-4" /></div>
+              <div>
+                <h2 className="font-semibold text-gray-950 dark:text-white text-sm">Prompt Engineering Studio</h2>
+                <p className="text-[11px] text-gray-450 dark:text-slate-500 mt-0.5">Customize the system instructions used for AI generation models.</p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-650 dark:text-slate-400 mb-1.5 flex items-center gap-1.5">
+                  <Target className="w-3.5 h-3.5 text-blue-500" /> Lead Qualification Prompt (FANT)
+                </label>
+                <textarea
+                  value={form.prompt_qualify}
+                  onChange={handleChange("prompt_qualify")}
+                  rows={2}
+                  placeholder="Default system prompt will be used if left blank..."
+                  className="input-field text-xs font-mono leading-relaxed"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-655 dark:text-slate-400 mb-1.5 flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5 text-purple-500" /> Cold Email Outreach Prompt
+                </label>
+                <textarea
+                  value={form.prompt_email}
+                  onChange={handleChange("prompt_email")}
+                  rows={2}
+                  placeholder="Default system prompt will be used if left blank..."
+                  className="input-field text-xs font-mono leading-relaxed"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-655 dark:text-slate-400 mb-1.5 flex items-center gap-1.5">
+                  <Linkedin className="w-3.5 h-3.5 text-sky-500" /> LinkedIn Outreach Prompt (Note & InMail)
+                </label>
+                <textarea
+                  value={form.prompt_linkedin}
+                  onChange={handleChange("prompt_linkedin")}
+                  rows={2}
+                  placeholder="Default system prompt will be used if left blank..."
+                  className="input-field text-xs font-mono leading-relaxed"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-655 dark:text-slate-400 mb-1.5 flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-emerald-500" /> Call Script / Dialer Prompt
+                </label>
+                <textarea
+                  value={form.prompt_dialer}
+                  onChange={handleChange("prompt_dialer")}
+                  rows={2}
+                  placeholder="Default system prompt will be used if left blank..."
+                  className="input-field text-xs font-mono leading-relaxed"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-655 dark:text-slate-400 mb-1.5 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-amber-500" /> Market Research Prompt
+                  </label>
+                  <textarea
+                    value={form.prompt_research}
+                    onChange={handleChange("prompt_research")}
+                    rows={2}
+                    placeholder="Default prompt..."
+                    className="input-field text-xs font-mono leading-relaxed"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-655 dark:text-slate-400 mb-1.5 flex items-center gap-1.5">
+                    <BadgeCheck className="w-3.5 h-3.5 text-rose-500" /> Battle Card Prompt
+                  </label>
+                  <textarea
+                    value={form.prompt_battle_card}
+                    onChange={handleChange("prompt_battle_card")}
+                    rows={2}
+                    placeholder="Default prompt..."
+                    className="input-field text-xs font-mono leading-relaxed"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
         </form>
       </main>
     </div>

@@ -53,8 +53,10 @@ def get_stats(db: Session = Depends(get_db), current_user: User = Depends(get_cu
     by_score = {}
     emails_generated = 0
     for lead in leads:
-        by_status[lead.status.value] = by_status.get(lead.status.value, 0) + 1
-        by_score[lead.score.value] = by_score.get(lead.score.value, 0) + 1
+        status_val = lead.status.value if lead.status else "new"
+        score_val = lead.score.value if lead.score else "unscored"
+        by_status[status_val] = by_status.get(status_val, 0) + 1
+        by_score[score_val] = by_score.get(score_val, 0) + 1
         if lead.generated_email:
             emails_generated += 1
     return {
