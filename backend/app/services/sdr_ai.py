@@ -32,9 +32,9 @@ def _parse_json(raw: str) -> dict:
         raise e
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # LIVE CRAWLER & SEARCH ENGINE SOURCING HELPERS
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def _crawl_domain_text(domain: str) -> dict:
     """Make real HTTP request to domain to extract meta, visible text, and emails."""
@@ -116,9 +116,9 @@ def _search_duckduckgo_snippets(query: str) -> str:
     return ""
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # QUALIFY LEAD (FANT)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def qualify_lead_with_openai(lead: Lead, custom_prompt: str = None) -> dict:
     """Qualify lead based on FANT framework (Fit, Authority, Need, Timeline)."""
@@ -157,13 +157,13 @@ Pain Points: {lead.pain_points or 'efficiency bottlenecks'}"""
             "qualification_result": parsed.get("qualification_result", "No summary.")
         }
     except Exception as exc:
-        logger.error(f"[ai_service_new] Qualification failed: {exc}")
+        logger.error(f"[sdr_ai] Qualification failed: {exc}")
         raise RuntimeError(f"Qualification failed: {str(exc)}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # GENERATE EMAIL
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def generate_email_with_gemini(
     lead: Lead,
@@ -208,13 +208,13 @@ Keep the entire email under 150 words. Do not use generic placeholders."""
     try:
         return generate_text(prompt)
     except Exception as exc:
-        logger.error(f"[ai_service_new] Email generation failed: {exc}")
+        logger.error(f"[sdr_ai] Email generation failed: {exc}")
         raise RuntimeError(f"Email generation failed: {str(exc)}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # GENERATE CALL SCRIPT
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def generate_call_script_with_gemini(
     lead: Lead,
@@ -260,13 +260,13 @@ Keep the script natural, conversational, and direct."""
     try:
         return generate_text(prompt)
     except Exception as exc:
-        logger.error(f"[ai_service_new] Script generation failed: {exc}")
+        logger.error(f"[sdr_ai] Script generation failed: {exc}")
         raise RuntimeError(f"Script generation failed: {str(exc)}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # GENERATE LINKEDIN OUTREACH
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def generate_linkedin_outreach(lead: Lead, custom_prompt: str = None) -> dict:
     """Generate a personalized LinkedIn invitation note and an InMail draft."""
@@ -291,13 +291,13 @@ Pain Points: {lead.pain_points or 'efficiency bottlenecks'}"""
         raw = generate_json(system_prompt, user_prompt)
         return _parse_json(raw)
     except Exception as exc:
-        logger.error(f"[ai_service_new] LinkedIn outreach generation failed: {exc}")
+        logger.error(f"[sdr_ai] LinkedIn outreach generation failed: {exc}")
         raise RuntimeError(f"LinkedIn outreach generation failed: {str(exc)}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # GENERATE MARKET RESEARCH
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def generate_market_research(lead: Lead, custom_prompt: str = None) -> dict:
     """Generate AI company profile, predicted tech stack, and top competitors."""
@@ -325,13 +325,13 @@ Key Pain Points: {lead.pain_points or 'N/A'}"""
         raw = generate_json(system_prompt, user_prompt)
         return _parse_json(raw)
     except Exception as exc:
-        logger.error(f"[ai_service_new] Market research generation failed: {exc}")
+        logger.error(f"[sdr_ai] Market research generation failed: {exc}")
         raise RuntimeError(f"Market research generation failed: {str(exc)}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # GENERATE OBJECTION BATTLE CARD
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def generate_objection_battle_card(lead: Lead, custom_prompt: str = None) -> dict:
     """Generate a sales objection handler battle card in Markdown format."""
@@ -355,13 +355,13 @@ Pain Points: {lead.pain_points or 'efficiency bottlenecks'}"""
         raw = generate_json(system_prompt, user_prompt)
         return _parse_json(raw)
     except Exception as exc:
-        logger.error(f"[ai_service_new] Battle card generation failed: {exc}")
+        logger.error(f"[sdr_ai] Battle card generation failed: {exc}")
         raise RuntimeError(f"Battle card generation failed: {str(exc)}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # DISCOVER LEADS (WITH SEARCH ENGINE)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def discover_leads_with_ai(keyword: str) -> list[dict]:
     """Generate 3 target leads matching the given keyword using real-time search engine results."""
@@ -400,13 +400,13 @@ Using the search results above, extract real profile names, roles, and companies
                 raise ValueError("AI response is not a valid list of leads")
         return parsed
     except Exception as exc:
-        logger.error(f"[ai_service_new] Discover leads failed: {exc}")
+        logger.error(f"[sdr_ai] Discover leads failed: {exc}")
         return []
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # VOICE DIALER, DOMAIN ENRICHMENT & GAMIFICATION
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def generate_dialer_response(lead: Lead, user_objection: str, conversation_history: str = "") -> str:
     """Generate dynamic pitch response for verbal roleplay objections."""
@@ -428,7 +428,7 @@ Respond to the prospect's objection directly, politely, and assertively. Keep yo
     try:
         return generate_text(prompt)
     except Exception as exc:
-        logger.error(f"[ai_service_new] Dialer response generation failed: {exc}")
+        logger.error(f"[sdr_ai] Dialer response generation failed: {exc}")
         return f"I completely understand, {lead.name}. Many {lead.job_title or 'leaders'} at companies like {lead.company or 'yours'} feel the same way. What if we could show you a quick 5-minute solution?"
 
 
@@ -472,7 +472,7 @@ Use the live scraped context above to infer the company's real focus, industry, 
                 raise ValueError("Enrichment response is not a valid list")
         return parsed
     except Exception as exc:
-        logger.error(f"[ai_service_new] Domain enrichment failed: {exc}")
+        logger.error(f"[sdr_ai] Domain enrichment failed: {exc}")
         prefix = domain.split('.')[0].capitalize()
         return [
             {
@@ -481,7 +481,7 @@ Use the live scraped context above to infer the company's real focus, industry, 
                 "company": prefix,
                 "job_title": "VP of Growth & Operations",
                 "industry": "Technology",
-                "company_size": "201-500",
+                "company_size": "201-550",
                 "annual_revenue": "$10M-$50M",
                 "pain_points": f"Scaling outbound sales campaigns manually at {prefix}."
             },
@@ -491,7 +491,7 @@ Use the live scraped context above to infer the company's real focus, industry, 
                 "company": prefix,
                 "job_title": "CTO",
                 "industry": "Technology",
-                "company_size": "201-500",
+                "company_size": "201-550",
                 "annual_revenue": "$10M-$50M",
                 "pain_points": f"Data integration latency and software orchestration silos at {prefix}."
             },
@@ -501,7 +501,7 @@ Use the live scraped context above to infer the company's real focus, industry, 
                 "company": prefix,
                 "job_title": "Head of Sales Development",
                 "industry": "Technology",
-                "company_size": "201-500",
+                "company_size": "201-550",
                 "annual_revenue": "$10M-$50M",
                 "pain_points": f"Unqualified sales meetings leading to low pipeline conversion rates at {prefix}."
             }
@@ -533,7 +533,7 @@ Respond ONLY with a valid JSON object matching this structure:
         raw = generate_json(system_prompt, user_prompt)
         return _parse_json(raw)
     except Exception as exc:
-        logger.error(f"[ai_service_new] Pitch rating failed: {exc}")
+        logger.error(f"[sdr_ai] Pitch rating failed: {exc}")
         return {
             "overall_score": 75,
             "empathy_score": 80,
@@ -589,7 +589,7 @@ Using the search results above, extract real profile names, roles, and companies
                 raise ValueError("ICP leads generation response is not a valid list")
         return parsed
     except Exception as exc:
-        logger.error(f"[ai_service_new] ICP lead generation failed: {exc}")
+        logger.error(f"[sdr_ai] ICP lead generation failed: {exc}")
         return [
             {
                 "name": "David Miller",

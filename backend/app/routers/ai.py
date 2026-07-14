@@ -11,7 +11,7 @@ from app.schemas.schemas import (
     DomainEnrichmentRequest, PitchRateRequest, PitchRateResponse, ICPLeadsRequest
 )
 from app.utils.auth import get_current_user
-from app.services.ai_service_new import (
+from app.services.sdr_ai import (
     qualify_lead_with_openai, generate_email_with_gemini, generate_call_script_with_gemini,
     discover_leads_with_ai, generate_linkedin_outreach, generate_market_research,
     generate_objection_battle_card, generate_dialer_response, enrich_company_domain,

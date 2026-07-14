@@ -44,7 +44,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const demoEmail = "demo@aisdr.com";
-      const demoPassword = "AI_SDR_Demo_Secure_2026!";
+      const demoPassword = "demo1234";
       setForm({ name: "", email: demoEmail, password: demoPassword });
       const res = await authApi.login({ email: demoEmail, password: demoPassword });
       localStorage.setItem("token", res.data.access_token);

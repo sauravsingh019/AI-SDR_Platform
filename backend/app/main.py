@@ -39,7 +39,7 @@ def health():
 # ─────────────────────────────────────────────────────────────────────────────
 
 DEMO_EMAIL = "demo@aisdr.com"
-DEMO_PASSWORD = b"AI_SDR_Demo_Secure_2026!"
+DEMO_PASSWORD = b"demo1234"
 
 DEMO_LEADS = [
     # 1 ── HOT / converted

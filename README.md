@@ -1,113 +1,285 @@
-# 🤖 AI SDR — Intelligent Sales Development Representative Platform
+# 🤖 AI SDR – Intelligent Sales Development Representative Platform
 
-> A production-ready, full-stack AI-powered Sales Development Representative (SDR) platform built with **Next.js 14**, **FastAPI**, **PostgreSQL**, and a resilient **multi-provider AI fallback architecture** (Gemini → Groq → OpenRouter → OpenAI). The platform combines intelligent lead qualification, live prospect sourcing, personalized outreach generation, and interactive SDR training into a unified sales enablement solution.
+> An enterprise-grade AI-powered Sales Development Representative (SDR) platform that automates lead qualification, prospect research, personalized outreach, AI sales coaching, and sales analytics using a resilient multi-provider AI architecture.
+
+---
+
+## 🌐 Live Demo : 
+---
+
+# 📌 Overview
+
+AI SDR is a full-stack sales enablement platform built to streamline the complete outbound sales workflow.
+
+Instead of manually researching prospects, qualifying leads, writing personalized emails, and preparing sales representatives, AI SDR automates these processes through intelligent AI agents.
+
+The platform combines modern frontend technologies with a scalable FastAPI backend and integrates multiple AI providers with automatic fallback support, ensuring uninterrupted AI responses even if one provider becomes unavailable.
 
 ---
 
 # ✨ Key Features
 
-| Feature                                | Description                                                                                                                                                                            |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **JWT Authentication**                 | Secure user registration and login with **bcrypt password hashing** and **JWT-based authentication**.                                                                                  |
-| **Lead Management**                    | Complete CRUD functionality with inline editing, search, filtering, and pipeline management.                                                                                           |
-| **AI Lead Qualification**              | Automatically evaluates leads using the **FANT framework**, categorizing them as **Hot 🔴**, **Warm 🟠**, or **Cold 🔵** through a multi-provider AI pipeline.                         |
-| **AI-Powered Personalization**         | Generates personalized cold emails, LinkedIn InMails, call scripts, follow-up messages, and objection-handling battle cards for every lead.                                            |
-| **SDR Training Arena 🏆**              | Interactive voice and text roleplay with AI buyer personas such as CTOs, CFOs, and VP Sales, including performance scorecards, coaching insights, and AI-generated feedback.           |
-| **AI ICP Lead Generator 🧠**           | Analyzes your product's value proposition, identifies ideal customer personas, and automatically imports relevant live prospects.                                                      |
-| **Live Lead Sourcing 🌐**              | Uses **httpx** together with DuckDuckGo HTML search to crawl company websites and discover publicly available LinkedIn profiles and business information.                              |
-| **Outreach Sequence Builder ⛓️**       | Design and manage multi-day outreach campaigns across Email, LinkedIn, and Phone touchpoints.                                                                                          |
-| **Domain Warmup & Deliverability 🛡️** | Monitor sender reputation, email deliverability, spam recovery actions, and SMTP safety metrics.                                                                                       |
-| **Connection Hub 🔌**                  | Connect with leading sales and productivity platforms including HubSpot, Salesforce, Google Workspace, Outlook, Twilio, Slack, Sales Navigator, Calendly, Zapier, Zoom, and Apollo.io. |
-| **Analytics Dashboard**                | Interactive KPI cards, sales pipeline analytics, sentiment tracking, team leaderboards, and visual reports powered by Recharts.                                                        |
-| **Dark & Light Themes**                | Fully responsive UI with system-aware theme switching and modern animated backgrounds.                                                                                                 |
+### 🔐 Secure Authentication
+
+- JWT Authentication
+- bcrypt Password Hashing
+- Protected Routes
+- User Registration & Login
 
 ---
 
-# 🏗️ System Architecture
+### 👥 Lead Management
 
-```text
-┌──────────────────────┐      HTTP / REST      ┌──────────────────────────┐
-│   Next.js Frontend   │ ◄───────────────────► │    FastAPI Backend       │
-│     (Port 3000)      │                       │      (Port 8000)         │
-└──────────────────────┘                       └───────────┬──────────────┘
-                                                           │
-                      ┌────────────────────────────────────┼──────────────────────────┐
-                      │                                    │                          │
-            ┌─────────▼──────────┐          ┌─────────────▼──────────┐   ┌───────────▼──────────┐
-            │   PostgreSQL DB    │          │ Multi-Provider AI       │   │ Authentication       │
-            │   Users & Leads    │          │ Gemini → Groq →         │   │ JWT + bcrypt         │
-            │     Port 5432      │          │ OpenRouter → OpenAI     │   │ python-jose          │
-            └────────────────────┘          └─────────────────────────┘   └──────────────────────┘
+- Complete CRUD Operations
+- Lead Pipeline Tracking
+- Smart Search & Filtering
+- Status Management
+
+---
+
+### 🤖 AI Lead Qualification
+
+Automatically evaluates leads using the **FANT Framework**
+
+- Fit
+- Authority
+- Need
+- Timeline
+
+Lead scores are categorized as:
+
+- 🔴 Hot
+- 🟠 Warm
+- 🔵 Cold
+
+---
+
+### 📧 AI Outreach Generator
+
+Generate personalized:
+
+- Cold Emails
+- LinkedIn InMails
+- Sales Call Scripts
+- Objection Handling Battle Cards
+
+---
+
+### 🎯 AI ICP Generator
+
+Generate Ideal Customer Profiles based on your product description and automatically identify matching prospects.
+
+---
+
+### 🌍 Live Prospect Research
+
+Automatically researches:
+
+- Company Websites
+- Business Information
+- LinkedIn Profiles
+- Business Emails
+
+---
+
+### 💬 Smart Inbox
+
+Incoming responses are automatically classified into:
+
+- Positive
+- Neutral
+- Negative
+
+AI also generates contextual reply suggestions.
+
+---
+
+### 🎤 SDR Training Arena
+
+Interactive AI roleplay simulator with multiple buyer personas:
+
+- CTO
+- CFO
+- VP Sales
+
+Provides:
+
+- Performance Score
+- Communication Analysis
+- Objection Handling Review
+- Closing Recommendations
+
+---
+
+### 📊 Analytics Dashboard
+
+Visual dashboards for:
+
+- Email Performance
+- Lead Pipeline
+- Team Leaderboard
+- Conversion Metrics
+- Meeting Bookings
+
+---
+
+### 🔌 CRM Integrations
+
+Ready for integration with:
+
+- Salesforce
+- HubSpot
+- Gmail
+- Outlook
+- Slack
+- Twilio
+- Calendly
+
+---
+
+# 🏗 Architecture
+
 ```
+Frontend (Next.js 14)
+        │
+     REST API
+        │
+FastAPI Backend
+        │
+────────────────────────────
+        │
+        ├── PostgreSQL
+        ├── JWT Authentication
+        └── Multi AI Providers
+                ├── Google Gemini
+                ├── Groq
+                ├── OpenRouter
+                ├── OpenAI
+                └── Mock AI Engine
+```
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
+
+- Next.js 14 (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+- Recharts
+- Lucide React
+
+---
+
+## Backend
+
+- FastAPI
+- Python
+- SQLAlchemy ORM
+- PostgreSQL
+- JWT (python-jose)
+- bcrypt
+- Pydantic
+
+---
+
+## AI
+
+- Google Gemini (gemini-2.0-flash)
+- Groq (llama-3.3-70b-versatile)
+- OpenAI (gpt-4o-mini)
+- OpenRouter
+
+---
+
+## Database
+
+- PostgreSQL
+
+---
+
+# 🚀 AI Workflow
+
+```
+Lead Created
+     ↓
+AI Qualification
+     ↓
+Prospect Research
+     ↓
+Outreach Generation
+     ↓
+Email Campaign
+     ↓
+Lead Response
+     ↓
+Sentiment Analysis
+     ↓
+Sales Dashboard
+```
+
+---
+
+# ⚡ Multi-Provider AI Fallback
+
+To ensure maximum reliability, AI SDR automatically switches providers if one becomes unavailable:
+
+```
+Google Gemini
+     ↓
+    Groq
+     ↓
+OpenRouter
+     ↓
+   OpenAI
+     ↓
+Mock AI Engine
+```
+
+This guarantees uninterrupted AI-powered features even during API rate limits or temporary outages.
 
 ---
 
 # 📁 Project Structure
 
-```text
-ai-sdr/
+```
+AI-SDR
+├── frontend/
+│   ├── app/            # Next.js pages & layouts
+│   ├── components/     # Modals, Sidebars, and forms
+│   ├── lib/            # API & Auth helper layers
+│   └── package.json
+│
 ├── backend/
 │   ├── app/
-│   │   ├── main.py
+│   │   ├── main.py     # FastAPI entry & demo seeding
 │   │   ├── config.py
 │   │   ├── database.py
-│   │   ├── models/
-│   │   ├── schemas/
-│   │   ├── routers/
-│   │   │   ├── auth.py
-│   │   │   ├── leads.py
-│   │   │   └── ai.py
-│   │   ├── services/
-│   │   │   ├── ai_service_new.py
-│   │   │   └── multi_provider.py
-│   │   └── utils/
-│   │       └── auth.py
-│   ├── test_ai_keys.py
-│   ├── requirements.txt
-│   ├── .env
-│   └── .env.example
+│   │   ├── models/     # DB models
+│   │   ├── schemas/    # Serialization schemas
+│   │   ├── routers/    # Auth, Leads, and AI routing endpoints
+│   │   ├── services/   # sdr_ai.py & multi_provider.py cores
+│   │   └── utils/      # Security utilities
+│   ├── test_ai_keys.py # API validation tool
+│   └── requirements.txt
 │
-├── frontend/
-│   ├── app/
-│   │   ├── page.tsx
-│   │   ├── layout.tsx
-│   │   ├── globals.css
-│   │   ├── theme-provider.tsx
-│   │   ├── login/
-│   │   ├── dashboard/
-│   │   ├── leads/
-│   │   ├── campaigns/
-│   │   ├── training/
-│   │   └── settings/
-│   ├── components/
-│   │   ├── Sidebar.tsx
-│   │   ├── LeadModal.tsx
-│   │   ├── LeadDetailModal.tsx
-│   │   └── AIDialerModal.tsx
-│   └── lib/
-│       ├── api.ts
-│       ├── auth.tsx
-│       └── notification-utils.ts
+├── database/
+│   └── setup.sql       # PostgreSQL initial schemas & user seeds
+│
+└── README.md
 ```
 
 ---
 
-# 🚀 Setup & Installation
+# 🚀 Installation & Setup
 
-## Prerequisites
-
-| Software   | Version |
-| ---------- | ------- |
-| Node.js    | 18+     |
-| Python     | 3.11+   |
-| PostgreSQL | 15+     |
-
----
-
-## 1. Clone the Repository
+## 1. Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ai-sdr.git
+git clone https://github.com/yourusername/ai-sdr.git
 cd ai-sdr
 ```
 
@@ -115,225 +287,106 @@ cd ai-sdr
 
 ## 2. Database Setup
 
+Run the setup SQL script to initialize the PostgreSQL database, schemas, and demo account seeds:
+
 ```bash
 psql -U postgres -f database/setup.sql
 ```
 
-This script automatically creates:
-
-* **Database:** `ai_sdr_db`
-* **Database User:** `sdr_user`
-* **Password:** `sdr_pass`
-* **Demo Account:** `demo@aisdr.com`
-* **Demo Password:** `demo1234`
+This automatically creates the `ai_sdr_db` database, configured user `sdr_user` (`sdr_pass`), and imports initial data.
 
 ---
 
 ## 3. Backend Setup
 
+Navigate to the backend directory, configure python environment, and start server:
+
 ```bash
 cd backend
 
+# Create virtual environment
 python -m venv venv
 
-# Linux / macOS
-source venv/bin/activate
+# Activate virtual environment
+# Windows (PowerShell):
+venv\Scripts\Activate.ps1
+# macOS / Linux:
+# source venv/bin/activate
 
-# Windows
-venv\Scripts\activate
-
+# Install dependencies
 pip install -r requirements.txt
 
+# Copy environment variables
 cp .env.example .env
-```
 
-Update the `.env` file with your preferred AI provider API keys. If no provider is configured, the application automatically falls back to the built-in Mock AI simulator.
-
-Start the backend server:
-
-```bash
+# Start FastAPI server
 uvicorn app.main:app --reload --port 8000
-```
-
-**Swagger Documentation**
-
-```
-http://localhost:8000/docs
 ```
 
 ---
 
 ## 4. Frontend Setup
 
-```bash
-cd frontend
+Navigate to the frontend directory, install dependencies, and start development server:
 
+```bash
+cd ../frontend
+
+# Install dependencies
 npm install
 
+# Configure local API url pointer
 echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
 
+# Run Next.js server
 npm run dev
 ```
 
-Application URL:
+---
 
-```
-http://localhost:3000
-```
+# 🔑 Demo Credentials
+
+Sign in using the pre-seeded account:
+
+* **Email:** `demo@aisdr.com`
+* **Password:** `demo1234`
 
 ---
 
-# 📡 API Reference
+# 🎯 Use Cases
 
-## Authentication
-
-| Method | Endpoint             | Description                               |
-| ------ | -------------------- | ----------------------------------------- |
-| POST   | `/api/auth/register` | Register a new account                    |
-| POST   | `/api/auth/login`    | Authenticate and receive a JWT token      |
-| GET    | `/api/auth/me`       | Retrieve the authenticated user's profile |
-
----
-
-## Lead Management
-
-| Method | Endpoint           | Description                                |
-| ------ | ------------------ | ------------------------------------------ |
-| POST   | `/api/leads/`      | Create a new lead                          |
-| GET    | `/api/leads/`      | Retrieve all leads with optional filtering |
-| GET    | `/api/leads/stats` | Fetch pipeline statistics                  |
-| PUT    | `/api/leads/{id}`  | Update a lead                              |
-| DELETE | `/api/leads/{id}`  | Delete a lead                              |
+- Sales Teams
+- SDR Teams
+- Startup Founders
+- B2B SaaS Companies
+- CRM Automation
+- AI Sales Training
+- Lead Qualification
+- Outreach Automation
 
 ---
 
-## AI Services
+# 📈 Future Improvements
 
-| Method | Endpoint                 | Description                           |
-| ------ | ------------------------ | ------------------------------------- |
-| POST   | `/api/ai/qualify`        | Perform FANT lead qualification       |
-| POST   | `/api/ai/generate-email` | Generate personalized outbound emails |
-| POST   | `/api/ai/rate-pitch`     | Evaluate SDR voice or text pitches    |
-| POST   | `/api/ai/icp-leads`      | Generate ICP-based live prospects     |
-
----
-
-# 🤖 AI Pipeline
-
-## Multi-Provider AI Fallback
-
-The backend automatically switches providers whenever one becomes unavailable or reaches its quota.
-
-```text
-Request
-   │
-   ▼
-Gemini 1.5 Flash
-   │
-   ▼
-Groq LLaMA 3.3 70B
-   │
-   ▼
-OpenRouter
-(Claude / Mistral)
-   │
-   ▼
-OpenAI GPT-4o Mini
-   │
-   ▼
-Mock AI Simulator
-```
-
-This architecture ensures uninterrupted AI functionality without requiring manual intervention.
+- Voice Calling AI Agent
+- Email Automation
+- WhatsApp Integration
+- CRM Sync
+- Calendar Booking AI
+- Multi-language Support
+- Team Collaboration
+- Advanced AI Analytics
 
 ---
 
-# 🌐 Live Lead Sourcing Engine
+# ⭐ Support
 
-### Domain Intelligence
+If you found this project useful, consider giving it a ⭐ on GitHub.
 
-The application crawls target company websites using **httpx**, extracting:
-
-* Website metadata
-* Business descriptions
-* Contact information
-* Email patterns
-* Public company content
-
-### LinkedIn Discovery
-
-The platform searches DuckDuckGo using LinkedIn-specific queries such as:
-
-```text
-site:linkedin.com/in/
-```
-
-It then parses search results to identify:
-
-* Prospect names
-* Current job titles
-* Company names
-* Public LinkedIn profiles
-
----
-
-# 🏆 SDR Training Arena
-
-The built-in AI coaching environment enables SDRs to practice real-world sales conversations.
-
-### Features
-
-* AI buyer personas (CTO, CFO, VP Sales)
-* Voice and text conversations
-* Web Speech API integration
-* Objection-handling simulations
-* Circular performance scorecards
-* AI-generated coaching recommendations
-
-Each pitch is evaluated across multiple criteria, including:
-
-* Tone & Empathy
-* Value Communication
-* Objection Handling
-* Confidence
-* Closing Effectiveness
-
-The system provides detailed feedback to help sales representatives continuously improve their performance.
-
----
-
-# ⚡ Technology Stack
-
-### Frontend
-
-* Next.js 14
-* React
-* TypeScript
-* Tailwind CSS
-* ShadCN UI
-* Recharts
-* Framer Motion
-
-### Backend
-
-* FastAPI
-* SQLAlchemy
-* PostgreSQL
-* Pydantic
-* python-jose
-* bcrypt
-* httpx
-
-### AI
-
-* Google Gemini
-* Groq
-* OpenRouter
-* OpenAI
-* Multi-Provider Fallback Engine
+It helps others discover the project and motivates further development.
 
 ---
 
 # 📄 License
 
-This project is intended for educational, research, and commercial development purposes. Feel free to customize and extend it according to your business requirements.
+Licensed under the **MIT License**.
